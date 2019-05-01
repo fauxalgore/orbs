@@ -27,8 +27,8 @@ jobs:
     <<: *defaults
     steps:
     - checkout
-    - run: echo "TODO: check that the orb job has all required variables."
-    - run: echo "TODO: check that the orb job sees expected files. composer.json, composer.lock, etc."
+    - run: echo "TODO check that the orb job has all required variables."
+    - run: echo "TODO check that the orb job sees expected files. composer.json, composer.lock, etc."
     - run: /build-tools-ci/scripts/set-environment
     - attach_workspace:
         at: .
