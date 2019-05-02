@@ -133,6 +133,24 @@ jobs:
         paths:
         - bash_env.txt
 
+  merge:
+      <<: *defaults
+      steps:
+          - playground/setbashenv
+          - playground/composer_install_and_cache
+          - run: terminus -n auth:login --machine-token="$TERMINUS_TOKEN"
+          - run: git remote add pantheon $(terminus connection:info $TERMINUS_SITE.dev --field=git_url)
+          - run:
+              name: Merge
+              command: |
+                if [[ $CI_BRANCH != "master" ]] ; then
+                  exit 0
+                fi
+                # Merge the multidev for the PR into the dev environment
+                terminus -n build:env:merge "$TERMINUS_SITE.$TERMINUS_ENV" --yes
+                # Delete old multidev environments associated with a PR that has been
+                # merged or closed.
+                terminus -n build:env:delete:pr "$TERMINUS_SITE" --yes
 
   backstop:
     docker:
