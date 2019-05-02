@@ -14,7 +14,13 @@ defaults: &defaults
     TERM: dumb
 
 commands:
-
+  setbashenv:
+    description: "Copy the bash_env from the first job so that TERMINUS_ENV persists."
+    steps:
+    - checkout
+    - attach_workspace:
+        at: /tmp/workspace
+    - run: cp /tmp/workspace/bash_env.txt $BASH_ENV
   npmci_and_cache:
     parameters:
       package_lock_location:
@@ -35,15 +41,6 @@ commands:
             - /root/.npm
           key: node-v1-{{ .Branch }}-{{ checksum "<<parameters.package_lock_location>>/package-lock.json" }}
       - run: cd <<parameters.package_lock_location>> && <<parameters.build_command>>
-
-
-  setbashenv:
-    description: "Copy the bash_env from the first job so that TERMINUS_ENV persists."
-    steps:
-    - checkout
-    - attach_workspace:
-        at: /tmp/workspace
-    - run: cp /tmp/workspace/bash_env.txt $BASH_ENV
 
   # todo, merge with the composer installing happening in the build job.
   composer_install_and_cache:
