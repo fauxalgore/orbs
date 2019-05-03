@@ -6,7 +6,6 @@ description: |
 defaults: &defaults
   docker:
   - image: quay.io/pantheon-public/build-tools-ci:4.x
-  working_directory: ~/example_wordpress_composer
   environment:
     TZ: "/usr/share/zoneinfo/America/Los_Angeles"
     ADMIN_USERNAME: admin
@@ -110,7 +109,14 @@ jobs:
           paths:
             - <<parameters.path_to_persist>>
 
+  build:
+    <<: *defaults
+    steps:
+    - run: echo "use PUSH job instead"
+
   push:
+    <<: *defaults
+    steps:
     - run: echo "TODO check that the orb job has all required variables."
     - run: terminus -n auth:login --machine-token="$TERMINUS_TOKEN"
 
