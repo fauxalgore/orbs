@@ -63,7 +63,7 @@ commands:
               - composer-no-dev-{{ .Branch }}-{{ checksum "composer.lock" }}
               - composer-no-dev-{{ .Branch }}-
               - composer-no-dev-
-      - run: composer -n --optimize-autoloader --ignore-platform-reqs --no-dev
+      - run: composer -n install --optimize-autoloader --ignore-platform-reqs --no-dev
       - save_cache:
           key: composer-no-dev-{{ .Branch }}-{{ checksum "composer.lock" }}
           paths:
