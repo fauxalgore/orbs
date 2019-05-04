@@ -42,18 +42,19 @@ commands:
           key: node-v1-{{ .Branch }}-{{ checksum "<<parameters.package_lock_location>>/package-lock.json" }}
       - run: cd <<parameters.package_lock_location>> && <<parameters.build_command>>
 
-  # todo, merge with the composer installing happening in the build job.
-  composer_install_and_cache:
+  composer_install:
     description: "Restore composer cache, do a composer install, cache again."
     steps:
-        - restore_cache:
+      - restore_cache:
             keys:
-                - composer-{{ checksum "composer.lock" }}
-        - run: composer install --optimize-autoloader --ignore-platform-reqs
-        - save_cache:
-            key: composer-{{ checksum "composer.lock" }}
-            paths:
-                - $HOME/.composer/cache
+              - composer-{{ .Branch }}-{{ checksum "composer.lock" }}
+              - composer-{{ .Branch }}-
+              - composer-
+      - run: composer -n install --optimize-autoloader --ignore-platform-reqs
+      - save_cache:
+          key: composer-{{ .Branch }}-{{ checksum "composer.lock" }}
+          paths:
+          - $HOME/.composer/cache
 
   composer_install_no_dev:
     description: "Restore composer cache, do a composer install, cache again."
@@ -77,7 +78,7 @@ jobs:
     steps:
     - checkout
     - run: /build-tools-ci/scripts/set-environment
-    - composer_install_and_cache
+    - composer_install
     - run:
         name: Lint PHP code for syntax errors
         command: composer -n lint
@@ -118,7 +119,9 @@ jobs:
   push:
     <<: *defaults
     steps:
+    - checkout
     - run: echo "TODO check that the orb job has all required variables."
+    - run: /build-tools-ci/scripts/set-environment
     - run: terminus -n auth:login --machine-token="$TERMINUS_TOKEN"
 
     - run:
