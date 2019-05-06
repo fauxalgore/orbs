@@ -167,7 +167,7 @@ jobs:
     docker:
     - image: backstopjs/backstopjs:3.9.5
     steps:
-    - playground/setbashenv
+    - setbashenv
     - run: backstop reference --config=<<parameters.path_to_backstop_config>>
     - run: backstop test --config=<<parameters.path_to_backstop_config>> || touch backstop_failed.txt
     - store_artifacts:
