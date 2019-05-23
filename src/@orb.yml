@@ -111,11 +111,6 @@ jobs:
           paths:
             - <<parameters.path_to_persist>>
 
-  build:
-    <<: *defaults
-    stepzzzs:
-    - run: echo "use PUSH job instead"
-
   push:
     <<: *defaults
     steps:
