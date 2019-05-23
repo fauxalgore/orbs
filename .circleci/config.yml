@@ -1,0 +1,16 @@
+version: 2.1
+
+orbs:
+  orb-tools: circleci/orb-tools@8.5.0
+
+workflows:
+  lint_pack-validate_publish-dev:
+    jobs:
+      - orb-tools/lint
+      - orb-tools/publish-dev:
+          orb-name: fauxalgore/playground
+          parameters:
+            alpha-version-ref: 'dev:$CIRCLE_BRANCH'
+            checkout: true
+          requires:
+            - orb-tools/lint
