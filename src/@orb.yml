@@ -89,7 +89,6 @@ jobs:
         name: Run unit tests
         command: composer -n unit-test
 
-
   npmbuild_and_persist:
     docker:
       - image: node:10.15.3
