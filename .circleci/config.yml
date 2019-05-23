@@ -7,10 +7,10 @@ workflows:
   publish-dev:
     jobs:
       - orb-tools/publish-dev:
-        pre-steps:
-          - checkout
-          - run: circleci orb process src/@orb.yml
-        # pre steps to validate
-        alpha-version-ref: 'dev:$CIRCLE_BRANCH'
-        orb-name: fauxalgore/playground
-        orb-path: 'src/@orb.yml'
+          pre-steps:
+            - checkout
+            - run: circleci orb process src/@orb.yml
+          # pre steps to validate
+          alpha-version-ref: 'dev:$CIRCLE_BRANCH'
+          orb-name: fauxalgore/playground
+          orb-path: 'src/@orb.yml'
