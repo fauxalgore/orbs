@@ -8,9 +8,8 @@ workflows:
     jobs:
       - orb-tools/lint
       - orb-tools/publish-dev:
+          alpha-version-ref: 'dev:$CIRCLE_BRANCH'
+          checkout: true
           orb-name: fauxalgore/playground
-          parameters:
-            alpha-version-ref: 'dev:$CIRCLE_BRANCH'
-            checkout: true
           requires:
             - orb-tools/lint
