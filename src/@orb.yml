@@ -113,7 +113,7 @@ jobs:
 
   build:
     <<: *defaults
-    steps:
+    stepzzzs:
     - run: echo "use PUSH job instead"
 
   push:
