@@ -4,12 +4,13 @@ orbs:
   orb-tools: circleci/orb-tools@8.5.0
 
 workflows:
-  lint_pack-validate_publish-dev:
+  publish-dev:
     jobs:
-      - orb-tools/lint
+      #- orb-tools/lint
       - orb-tools/publish-dev:
+          # pre steps to validate
           alpha-version-ref: 'dev:$CIRCLE_BRANCH'
           checkout: true
           orb-name: fauxalgore/playground
-          requires:
-            - orb-tools/lint
+          orb-path: 'src/@orb.yml'
+       
