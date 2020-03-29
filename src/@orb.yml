@@ -85,6 +85,28 @@ commands:
 
 
 jobs:
+
+  make_multidev:
+    docker:
+      - image: quay.io/pantheon-public/build-tools-ci:6.x
+    steps:
+      - run:
+          name: Set TERMINUS_ENV
+          command: |
+            if [ -z "$CI_PULL_REQUEST" &&  "master" -eq "$CIRCLE_BRANCH"  ]
+            then
+                  echo "export TERMINUS_ENV='live'" >> $BASH_ENV
+            else
+                  echo "export TERMINUS_ENV='pr-${CI_PULL_REQUEST##*/}'" >> $BASH_ENV
+            fi
+      - run:
+          name: Authenticate with Pantheon's CLI using a machine token
+          command: terminus -n auth:login --machine-token="$TERMINUS_TOKEN"
+      - run:
+          # This step is needed while we're reliant on the current platform for
+          # domains. It should be removed once we have a custom Fastly instance.
+          name: Make a Multidev environment.
+          command: terminus env:list ${TERMINUS_SITE} --field=id | grep $TERMINUS_ENV || terminus multidev:create ${TERMINUS_SITE}.live $TERMINUS_ENV
   unit:
     <<: *defaults
     steps:
