@@ -86,6 +86,57 @@ commands:
 
 jobs:
 
+
+  gatsby_build_and_deploy:
+    docker:
+      - image: octahedroid/docker-static-build-tools
+    steps:
+    - checkout
+    - run:
+        name: Set TERMINUS_ENV
+        command: |
+          if [ -z "$CI_PULL_REQUEST" && "master" -eq "#CIRCLE_BRANCH"  ]
+          then
+                echo "export TERMINUS_ENV='live'" >> $BASH_ENV
+          else
+                echo "export TERMINUS_ENV='pr-${CI_PULL_REQUEST##*/}'" >> $BASH_ENV
+          fi
+    - run:
+        name: GCP auth
+        # In an Orb version, GOOGLE_PROJECT_ID and GOOGLE_COMPUTE_ZONE
+        # should have default values.
+        command: |
+            echo $GCP_SA | gcloud auth activate-service-account --key-file=-
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+    - restore_cache:
+        keys:
+          - yarn-cache{{ checksum "yarn.lock" }}
+    - run:
+        name: Install Dependencies
+        # Use --frozen-lockfile because the lock file was changing
+        # between my local and running in CircleCI.
+        command: yarn install --frozen-lockfile
+    - save_cache:
+        key: yarn-cache{{ checksum "yarn.lock" }}
+        paths:
+          - ./node_modules
+    # Make a variable for GATSBY_CP_COUNT. Or should this just be set
+    # as a global var? Set through the UI?
+    - run: GATSBY_CPU_COUNT=2 CI=true yarn build
+    - run:
+        name: Sync to GCP Bucket
+        command:
+          # I'm not sure that GCP_BUCKET should be a variable.
+          # If this becomes an orb, it could be an optional variable
+          # with a default argument.
+          gsutil -m rsync -r -c -d ./public gs://${GCP_BUCKET}/${TERMINUS_SITE}/${TERMINUS_ENV}
+    - run:
+        name: Set Metadata on uploaded objects
+        command:
+           # Make variables for numbers here.
+           gsutil -m setmeta -r -h "Cache-Control:public, s-maxage=15, stale-while-revalidate=300" -h "Content-Disposition" gs://${GCP_BUCKET}/${TERMINUS_SITE}/${TERMINUS_ENV}/*
+
   make_multidev:
     docker:
       - image: quay.io/pantheon-public/build-tools-ci:6.x
