@@ -19,7 +19,7 @@ commands:
     steps:
       - run:
         command: |
-          if [ -z "$CI_PULL_REQUEST" && "master" -eq "$CIRCLE_BRANCH"  ]
+          if [ -z "$CI_PULL_REQUEST" ] && [ "master" == "$CIRCLE_BRANCH" ]
           then
                 echo "export TERMINUS_ENV='live'" >> $BASH_ENV
           else
@@ -95,7 +95,7 @@ jobs:
     - run:
         name: Set TERMINUS_ENV
         command: |
-          if [ -z "$CI_PULL_REQUEST" && "master" -eq "#CIRCLE_BRANCH"  ]
+          if [ -z "$CI_PULL_REQUEST" ] && [ "master" == "$CIRCLE_BRANCH" ]
           then
                 echo "export TERMINUS_ENV='live'" >> $BASH_ENV
           else
