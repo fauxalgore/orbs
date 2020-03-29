@@ -14,6 +14,18 @@ defaults: &defaults
     TERM: dumb
 
 commands:
+  set_terminus_env:
+    description: "Set TERMINUS_ENV based on whether a PR is open."
+    steps:
+      - run:
+        command: |
+          if [ -z "$CI_PULL_REQUEST" && "master" -eq "#CIRCLE_BRANCH"  ]
+          then
+                echo "export TERMINUS_ENV='live'" >> $BASH_ENV
+          else
+                echo "export TERMINUS_ENV='pr-${CI_PULL_REQUEST##*/}'" >> $BASH_ENV
+          fi
+
   setbashenv:
     description: "Copy the bash_env from the first job so that TERMINUS_ENV persists."
     steps:
