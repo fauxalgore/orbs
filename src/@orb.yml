@@ -91,7 +91,7 @@ jobs:
 
   npmbuild_and_persist:
     docker:
-      - image: node:10.15.3
+      - image: node:14
 
     parameters:
       path_to_persist:
